@@ -101,9 +101,7 @@ def wav_to_pt(inpath, outpath, metadata_csv, column_name, duration=10000, sample
         audio = resample(audio, sample_rate)
         audio = rechannel(audio, 1)
         audio = fix_len(audio, duration)
-        # shift augment?
         sgram = spectrogram(audio)
-        # mask augment?
 
         newname = outpath+filename+'.pt'
         torch.save(sgram, newname)
@@ -111,18 +109,18 @@ def wav_to_pt(inpath, outpath, metadata_csv, column_name, duration=10000, sample
         
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Preprocess audio data and save as tensors.')
-    parser.add_argument("inpath", type=str, help="Path to the audio files.")
-    parser.add_argument("outpath", type=str, help="Path to the output files")
+    parser = argparse.ArgumentParser(description='Preprocess audio data and save as tensors (adapted specifically for the warblr10k dataset).')
+    parser.add_argument("inpath", type=str, help="Path to the audio file directory.")
+    parser.add_argument("outpath", type=str, help="Path to directory to save the output sgram files")
     parser.add_argument("metadata", type=str, help="Metadata file (csv)")
-    parser.add_argument("column_id", type=str, help="The ID of the metadata column containing the file names")
+    parser.add_argument("--column_id", "-c", dest="column_id", type=str, default="itemid", help="The ID of the metadata column containing the file names")
     parser.add_argument("--duration", "-d", dest="duration", type=int, default=10000, help="The duration of the output audioclips in milliseconds (int, default 10000)")
     parser.add_argument("--sample_rate", "-sr", dest="sample_rate", type=int, default=44100, help="The sample rate for resampling the audio (int, default 44100)")
     args = parser.parse_args()
  
-    inpath = args.inpath  # 'audio/wav/' # '/srv/data/gussodato/SONYC-UST/audio/'
-    outpath = args.outpath  # 'sgrams/' # '/srv/data/gussodato/SONYC-UST/sgrams'
-    metadata = args.metadata  #'labels/warblrb10k_public_metadata.csv' # '/srv/data/gussodato/SONYC-UST/metadata/annotations.csv'
+    inpath = args.inpath # e.g. '/srv/data/gussodato/SONYC-UST/audio/'
+    outpath = args.outpath  # e.g. '/srv/data/gussodato/SONYC-UST/sgrams'
+    metadata = args.metadata  # e.g. '/srv/data/gussodato/SONYC-UST/metadata/annotations.csv'
     column_id = args.column_id
     duration = args.duration
     sample_rate = args.sample_rate

@@ -98,16 +98,16 @@ class ASRModel(nn.Module):
         self.relu2 = nn.ReLU()
         self.avgpool2 = nn.AvgPool2d(kernel_size=options['pool_size'])
 
-        # 3rd conv-relu-pool with adaptive average pooling for fc input normalizing
+        # 3rd conv-relu-pool 
         self.conv3 = nn.Conv2d(in_channels=options['cnn_channels']*4, out_channels=options['cnn_channels']*8,
 			kernel_size=options['kernel_size'])
         self.relu3 = nn.ReLU()
         H, W = 1, options['avg_pool_out']
-        self.avgpool3 = nn.AvgPool2d(kernel_size=options['pool_size']) 
+        self.avgpool3 = nn.AdaptiveAvgPool2d((H,W)) 
       
         # fc-relu
         C = options['cnn_channels']*8  # == number of features
-        self.fc1 = nn.Linear(C*4, options['fc1_out']) # takes (batch,width,features) and returns (b, w, fc1_out)
+        self.fc1 = nn.Linear(C, options['fc1_out']) # takes (batch,width,features) and returns (b, w, fc1_out)
         self.relu4 = nn.ReLU()
        
         # RNN part  (takes (sequence length, batch, input size), equal to (W, B, fc1_out))
@@ -180,6 +180,7 @@ def train_asr(model, options):
             optimizer.step()
             optimizer.zero_grad()
             ep_train_losses.append(float(loss))
+
 
         print('Evaluating...')
         model.eval()
@@ -259,9 +260,9 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.alphabet == None:
-        alphabet = [''] + list("abcdefghijklmnopqrstuvwxyz' ")
+        alphabet = "abcdefghijklmnopqrstuvwxyz' "
     else:
-        alphabet_file = args.alphabet  #'/srv/data/gussodato/LibriSpeech/metadata/dev/alphabet.txt'
+        alphabet_file = args.alphabet  # e.g. '/srv/data/gussodato/LibriSpeech/metadata/dev/alphabet.txt'
         with open(alphabet_file) as f:
             alphabet = f.read()
             
@@ -269,9 +270,6 @@ if __name__ == '__main__':
 
     train_data = ASRDataset(args.train_transcript, args.traindata, converter)
     dev_data = ASRDataset(args.dev_transcript, args.devdata, converter)
-            
-    # indata_dir = args.traindata  # '/srv/data/gussodato/LibriSpeech/sgrams/dev/'
-    # transcript = args.train_transcript  #'/srv/data/gussodato/LibriSpeech/metadata/dev/transcripts.csv'
         
     model_options = {
         'in_channels': 1,
@@ -285,8 +283,7 @@ if __name__ == '__main__':
         'conv_stride': 1
     }
 
-    # dataset = ASRDataset(transcript, indata_dir, converter)
-    # train, eval = div_data(dataset, 0.8)
+
 
     model = ASRModel(model_options)
     
@@ -295,7 +292,7 @@ if __name__ == '__main__':
         'val_data': dev_data,
         'device': torch.device(args.device),
         'epochs': 200,
-        'batch_size': 2,
+        'batch_size': 4,
         'lr': 0.001,
         'early_stopping': True,
         'min_epochs': 10,

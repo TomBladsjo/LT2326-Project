@@ -9,6 +9,8 @@ from IPython import embed
 from tqdm.auto import tqdm 
 import matplotlib.pyplot as plt
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+import os
+from pathlib import Path
 
 
 class SoundDataset(Dataset):
@@ -95,7 +97,9 @@ class AudioClassifier(nn.Module):
 def train_classifier(model, device, train_dataloader, eval_dataloader, checkpoint_path, max_epochs=100, min_epochs=10, lr=0.001, stop_after=3, positive_weight=0.25):
     loss_fn = nn.BCEWithLogitsLoss(pos_weight=positive_weight).to(device)
     optimizer = optim.Adam(model.parameters(), lr=lr)
-
+    
+    if not Path(checkpoint_path).is_dir():
+        os.mkdir(checkpoint_path)
     print('Training...')
     
     best_epoch = 0
@@ -106,7 +110,6 @@ def train_classifier(model, device, train_dataloader, eval_dataloader, checkpoin
     f1s = []
     losses = []
     last_epoch = max_epochs
-    cos = nn.CosineSimilarity(dim=1, eps=1e-6)
     for epoch in range(max_epochs):
         model.to(device)
         model.train()
@@ -114,9 +117,6 @@ def train_classifier(model, device, train_dataloader, eval_dataloader, checkpoin
         y_trues = []
         y_preds = []
         for i, batch in enumerate(train_dataloader):
-
-            # copy model.fc2.weight and then after backprop do it again to check if it's updating
-            # old_weight = model.fc2.weight.detach().clone()
             
             x = batch[0].to(device)
             y_true = batch[1]
@@ -135,9 +135,6 @@ def train_classifier(model, device, train_dataloader, eval_dataloader, checkpoin
             optimizer.step()
             # reset gradients
             optimizer.zero_grad()
-            
-            # new_weight = model.fc2.weight.detach().clone()
-            # print(f'Model final layer weight vector cosine similarity:', cos(old_weight, new_weight), end='\r')
 
         train_accuracies.append(accuracy_score(y_trues, y_preds))
         losses.append(total_loss/len(train_dataloader.dataset))
@@ -167,8 +164,6 @@ def train_classifier(model, device, train_dataloader, eval_dataloader, checkpoin
                 val_accuracies.append(val_acc)
                 break
         val_accuracies.append(val_acc)
-        # if last x epochs accuracy decreased, retrieve last good weights 
-        # (will be automatic bc only saves when accuracy is good?)
 
     print(f'Done training. \nTotal epochs: {last_epoch} \nBest epoch: {best_epoch}')
     return train_accuracies, val_accuracies, losses, last_epoch
@@ -210,7 +205,7 @@ def binary_eval(model, device, dataloader, threshold=0.5):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Binary classification model')
-    parser.add_argument("indata_dir", type=str, help="Path to the input files.")
+    parser.add_argument("indata_dir", type=str, help="Path to the input sgram files.")
     parser.add_argument("metadata_file", type=str, help="Metadata file (csv) containing input file IDs and gold labels.")
     parser.add_argument("checkpoints_dir", type=str, help="Path to directory where model state dicts will be saved.")
     parser.add_argument("device", type=str, help="The device where training is done.")

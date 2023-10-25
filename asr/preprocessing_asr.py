@@ -146,7 +146,7 @@ def soundfiles_to_pt(inpath, outpath, transcript_path, get_alphabet=False, get_v
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Preprocess audio data and save as tensors.')
     parser.add_argument("inpath", type=str, help="Path to the audio files.")
-    parser.add_argument("outpath", type=str, help="Path to directory to save the output .pt-files in.")
+    parser.add_argument("outpath", type=str, help="Path to directory to save the output .pt files in.")
     parser.add_argument("transcript_path", type=str, help="Path to directory to save the transcript file in.")
     parser.add_argument("--sample_rate", "-sr", dest="sample_rate", type=int, default=44100, help="The sample rate for resampling the audio (int, default 44100)")
     parser.add_argument("--alphabet", "-a", dest="alphabet", type=bool, default=False, help="Wether to save the set of characters occurring in transcripts (bool, default=False)")

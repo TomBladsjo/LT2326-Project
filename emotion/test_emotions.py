@@ -117,7 +117,6 @@ def plot_score_all_models(score_dict_list, model_name_list, save_dir, score='F1'
         ax.bar_label(rects, padding=3)
         multiplier += 1
     
-    # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_title('Results, all models')
     ax.set_xticks(x + width, models)
     ax.legend()
@@ -128,18 +127,20 @@ def plot_score_all_models(score_dict_list, model_name_list, save_dir, score='F1'
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Test emotional speech classifiers.')
+    parser.add_argument("inpath", type=str, help="Path to directory containing subdirectories 'italian', 'urdu' and 'estonian', each with files 'train_data.csv' and 'test_data.csv' as well as subdirectory 'sgrams' containing input tensors.")
     parser.add_argument("-d", "--device", dest='device', default='cuda:0', help="GPU on which to perform computations.")
     args = parser.parse_args()
 
     device = torch.device(args.device)
     plot_dir = './plots/testing/'
-    n_test = 20#len(urdu_data)//2  # Just to have some fixed testset size, and because urdu is one of the smaller datasets.   
+
+    basedir = args.inpath  # e.g. '/srv/data/gussodato/emotions/'
     
     print('Collecting data...\n')
     converter = emotion_models.LabelIndexer('AHSN')
-    italian_data = emotion_models.EmoDataset('./italian/metadata.csv', './italian/sgrams/', converter)
-    urdu_data = emotion_models.EmoDataset('./urdu/metadata.csv', './urdu/sgrams/', converter)
-    estonian_data = emotion_models.EmoDataset('./estonian/metadata.csv', './estonian/sgrams/', converter)
+    italian_data = emotion_models.EmoDataset(os.path.join(basedir, 'italian/test_data.csv'), os.path.join(basedir, 'italian/sgrams/'), converter)
+    urdu_data = emotion_models.EmoDataset(os.path.join(basedir, 'urdu/test_data.csv'), os.path.join(basedir, 'urdu/sgrams/'), converter)
+    estonian_data = emotion_models.EmoDataset(os.path.join(basedir, 'estonian/test_data.csv'), os.path.join(basedir, 'estonian/sgrams/'), converter)
 
     model_options = {
         'in_channels': 1,

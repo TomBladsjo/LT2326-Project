@@ -265,6 +265,7 @@ def train_plot(title, train_list, val_list, save_dir):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Train emotional speech classifier.')
+    parser.add_argument("inpath", type=str, help="Path to directory containing subdirectories 'italian', 'urdu' and 'estonian', each with files 'train_data.csv' and 'test_data.csv' as well as subdirectory 'sgrams' containing input tensors.")
     parser.add_argument("-d", "--device", dest='device', default='cuda:0', help="GPU on which to perform computations.")
     args = parser.parse_args()
 
@@ -286,7 +287,7 @@ if __name__ == '__main__':
 
     print('Collecting data...\n')
 
-    data_dir = '/srv/data/gussodato/emotions/'
+    data_dir = args.inpath  # e.g. '/srv/data/gussodato/emotions/'
 
     italian_dir = os.path.join(data_dir, 'italian')
     urdu_dir = os.path.join(data_dir, 'urdu')

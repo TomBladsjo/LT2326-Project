@@ -54,8 +54,7 @@ def preprocess_urdu(basedir, outdir, augment=False):
                         metadata.append([name+'_aug1', urdu_labels[dirname]])
                         metadata.append([name+'_aug2', urdu_labels[dirname]])
                         augment_audio(os.path.join(dir, file), outdir, name)
-                    else:
-                        convert_audio(os.path.join(dir, file), outdir, name)
+                    convert_audio(os.path.join(dir, file), outdir, name)
     df = utils.make_df(metadata)
     df.to_csv(os.path.join(basedir, 'metadata.csv'), index=False)
             
@@ -78,8 +77,7 @@ def preprocess_italian(basedir, outdir, augment=False):
                     metadata.append([name+'_aug1', italian_labels[label]])
                     metadata.append([name+'_aug2', italian_labels[label]])
                     augment_audio(file, outdir, name)
-                else:
-                    convert_audio(file, outdir, name)
+                convert_audio(file, outdir, name)
                 
     df = utils.make_df(metadata)
     df.to_csv(os.path.join(basedir, 'metadata.csv'), index=False)
@@ -103,8 +101,7 @@ def preprocess_estonian(basedir, outdir, augment=False):
                 metadata.append([name+'_aug1', estonian_labels[label]])
                 metadata.append([name+'_aug2', estonian_labels[label]])
                 augment_audio(audiofile, outdir, name)
-            else:
-                convert_audio(audiofile, outdir, name)
+            convert_audio(audiofile, outdir, name)
     df = utils.make_df(metadata)
     df.to_csv(os.path.join(basedir, 'metadata.csv'), index=False)
             
@@ -118,7 +115,8 @@ def get_label_est(path):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Preprocess data for emotional speech classification.')
-    parser.add_argument("-a", "--augment", dest='augment', default=False, help="If True, augments the already preprocessed data.")
+    parser.add_argument("inpath", type=str, help="Path to directory containing subdirectories 'italian', 'urdu' and 'estonian', each with subdirectory 'data' containing the (unzipped) downloaded data in the structure it came.")
+    parser.add_argument("-a", "--augment", dest='augment', type=bool, default=False, help="If True, also augments the data.")
     args = parser.parse_args()
     
     urdu_labels = {
@@ -145,7 +143,7 @@ if __name__ == '__main__':
     if args.augment:
         print('Augmenting data...')
 
-    basicpath = '/srv/data/gussodato/emotions'   
+    basicpath = args.inpath   # e.g. '/srv/data/gussodato/emotions'   
 
     estonian = os.path.join(basicpath, 'estonian')
     preprocess_estonian(estonian, os.path.join(estonian, 'sgrams'), augment=args.augment)

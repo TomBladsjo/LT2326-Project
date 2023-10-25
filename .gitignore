@@ -4,8 +4,9 @@ __pycache__/
 *$py.class
 
 # Checkpoints
-emotions/checkpoints/
+emotion/checkpoints/
 birds/checkpoints/
+asr/checkpoints/
 
 # C extensions
 *.so
