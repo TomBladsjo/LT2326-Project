@@ -20,7 +20,8 @@ Takes command line arguments
 - "inpath": Path to the audio file directory.
 - "outpath": Path to directory to save the output sgram files.
 - "metadata": Metadata file (csv).
-And optional arguments
+
+Optional arguments:
 - "--column_id", "-c": The ID of the metadata column containing the file names (default "itemid").
 - "--duration", "-d": The duration of the output audioclips in milliseconds (default 10000).
 - "--sample_rate", "-sr": The sample rate for resampling the audio (default 44100).
@@ -39,6 +40,8 @@ Takes command line arguments
 
 Takes command line arguments
 - "inpath": Path to directory containing the data. Assumes a structure where "inpath" contains subdirectories 'italian', 'urdu' and 'estonian', each with subdirectory 'data' containing the (unzipped) downloaded data in the structure it came.
+
+Optional:
 - "-a", "--augment": If True, also augments the data (default False).
 
 #### Training
@@ -46,6 +49,8 @@ Takes command line arguments
 
 Takes command line arguments
 - "inpath": Path to directory containing train- and test/validation data. Assumes a structure where "inpath" contains subdirectories 'italian', 'urdu' and 'estonian', each with files 'train_data.csv' and 'test_data.csv' as well as subdirectory 'sgrams' containing input tensors.")
+
+Optional:
 - "-d", "--device": GPU on which to perform computations (default "cuda:0").
 
 #### Testing
@@ -53,6 +58,8 @@ Takes command line arguments
 
 Takes command line arguments
 - "inpath": Path to directory containing subdirectories 'italian', 'urdu' and 'estonian', each containing file 'test_data.csv' as well as subdirectory 'sgrams' containing input tensors.
+
+Optional:
 - "-d", "--device": GPU on which to perform computations (default "cuda:0).
 
 ### ASR
@@ -63,6 +70,7 @@ Takes command line arguments
 - "inpath": Path to the audio files.
 - "outpath": Path to directory to save the output .pt files in.
 - "transcript_path": Path to directory to save the transcript file in.
+
 Optional arguments:
 - "--sample_rate", "-sr": The sample rate for resampling the audio (default 44100).
 - "--alphabet", "-a": Wether to save the set of characters occurring in transcripts (default False).
